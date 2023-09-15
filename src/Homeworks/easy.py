@@ -1,13 +1,12 @@
 def solve(x):
-    try:
-        float(x)
-        if x[0] == '0' and len(x) > 1 or x[0:2] == '-0':
-            print('Integer cant begin with 0')
-            return 0
-        else:x = float(x)
-    except:
+    if not x.isdigit():
         print('x must be a integer')
-        return 0
+        return None
+
+    if x[0] == '0' and len(x) > 1 or x[0:2] == '-0':
+        print('Integer cant begin with 0')
+        return None
+    x = float(x)
 
     # (X^2+1)*(X^2+x)+1
     square_x = x ** 2
