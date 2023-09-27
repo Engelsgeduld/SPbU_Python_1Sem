@@ -8,11 +8,14 @@ def find(a, b):
 
 def main():
     while True:
-        user_input = input('Введите 2 числа через пробел')
-        if user_input == 'exit': break
-        inputs = [int(a) for a in user_input.split(' ')]
-        print(f'Нахождение неплоного частного {inputs[0]} и {inputs[1]}. Результат: {find(inputs[0], inputs[1])}')
+        user_input = input("Введите 2 числа через пробел")
+        if user_input == "exit":
+            break
+        inputs = [int(a) for a in user_input.split(" ")]
+        print(
+            f"Нахождение неплоного частного {inputs[0]} и {inputs[1]}. Результат: {find(inputs[0], inputs[1])}"
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

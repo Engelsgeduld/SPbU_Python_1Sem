@@ -1,5 +1,7 @@
 def prime(number):
-    return number > 1 and all(number % i != 0 for i in range(2, int(number ** 1 / 2) + 1))
+    return number > 1 and all(
+        number % i != 0 for i in range(2, int(number**1 / 2) + 1)
+    )
 
 
 def prime_numbers(number):
@@ -7,10 +9,11 @@ def prime_numbers(number):
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     while True:
-        print('Введите число:')
+        print("Введите число:")
         user_input = input()
-        if user_input == 'exit': break
+        if user_input == "exit":
+            break
         res = ",".join(map(str, prime_numbers(int(user_input))))
-        print(f'Простые числа: {res}')
+        print(f"Простые числа: {res}")
