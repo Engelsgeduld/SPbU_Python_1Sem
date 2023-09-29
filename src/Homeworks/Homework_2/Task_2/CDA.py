@@ -1,10 +1,12 @@
-
 from os.path import exists
 from collections import deque
 import itertools
 
+
 def write_file(CNA, file, command):
     file.write(f'{command} : {"".join(CNA)} \n')
+
+
 def insert(CDA, arg1, frag):
     index = find_sublist(CDA, arg1)[1]
     for i in range(len(frag)):
@@ -13,7 +15,10 @@ def insert(CDA, arg1, frag):
 
 def delete(CDA, arg1, arg2):
     if arg1 != arg2:
-        index_begin, index_end = [find_sublist(CDA, arg1)[1], find_sublist(CDA, arg2)[0]]
+        index_begin, index_end = [
+            find_sublist(CDA, arg1)[1],
+            find_sublist(CDA, arg2)[0],
+        ]
 
     else:
         index_begin, index_end = find_sublist(CDA, arg1)[0], find_sublist(CDA, arg2)[1]
@@ -38,21 +43,21 @@ def find_sublist(CDA, frag):
     return [res_begin, res_end]
 
 
-def command_center(file,file_write, CDA, n):
+def command_center(file, file_write, CDA, n):
     for line in file:
         command, arg1, arg2 = line.split()
         arg1 = [a for a in arg1]
         arg2 = [a for a in arg2]
         match command:
-            case 'INSERT':
+            case "INSERT":
                 insert(CDA, arg1, arg2)
-                write_file(CDA,file_write,line.replace("\n",""))
-            case 'DELETE':
+                write_file(CDA, file_write, line.replace("\n", ""))
+            case "DELETE":
                 delete(CDA, arg1, arg2)
-                write_file(CDA, file_write, line.replace("\n",""))
-            case 'REPLACE':
+                write_file(CDA, file_write, line.replace("\n", ""))
+            case "REPLACE":
                 replace(CDA, arg1, arg2)
-                write_file(CDA, file_write, line.replace("\n",""))
+                write_file(CDA, file_write, line.replace("\n", ""))
 
 
 def read_data(file):
@@ -64,13 +69,14 @@ def read_data(file):
 
 def main():
     user_input = input("Введите 2 файла \n").split()
-    if not(exists(user_input[0])) or not(exists(user_input[1])):exit(print("Неверно введены файлы"))
+    if not (exists(user_input[0])) or not (exists(user_input[1])):
+        exit(print("Неверно введены файлы"))
     file = open(user_input[0])
-    file_write = open(user_input[1], 'w')
+    file_write = open(user_input[1], "w")
     m, DNA, n = read_data(file)
     DNA = deque(DNA)
-    DNA.remove('\n')
-    command_center(file,file_write, DNA, n)
+    DNA.remove("\n")
+    command_center(file, file_write, DNA, n)
 
 
 if __name__ == "__main__":
