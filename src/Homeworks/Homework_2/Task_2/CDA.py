@@ -1,82 +1,112 @@
 from os.path import exists
-from collections import deque
 import itertools
 
 
-def write_file(CNA, file, command):
-    file.write(f'{command} : {"".join(CNA)} \n')
+def write_file(dna, file):
+    for line in dna:
+        file.write(f"{dna.index(line)} : {line} \n")
 
 
-def insert(CDA, arg1, frag):
-    index = find_sublist(CDA, arg1)[1]
-    for i in range(len(frag)):
-        CDA.insert(index + i, frag[i])
+def insert(dna, arg1, frag):
+    line = dna[-1]
+    index_of_arg1 = line.index(arg1)
+    dna.append(
+        line[: index_of_arg1 + len(arg1)] + frag + line[index_of_arg1 + len(arg1) :]
+    )
+    return dna
 
 
-def delete(CDA, arg1, arg2):
-    if arg1 != arg2:
-        index_begin, index_end = [
-            find_sublist(CDA, arg1)[1],
-            find_sublist(CDA, arg2)[0],
-        ]
-
-    else:
-        index_begin, index_end = find_sublist(CDA, arg1)[0], find_sublist(CDA, arg2)[1]
-
-    for _ in range(index_begin, index_end):
-        CDA.remove(CDA[index_begin])
+def delete(dna, arg1, arg2):
+    line = dna[-1]
+    index_of_arg1 = line.index(arg1)
+    dna.append(
+        line[: index_of_arg1 + len(arg1)]
+        + line[line.index(arg2, index_of_arg1) + len(arg2) - 1 :]
+    )
+    return dna
 
 
-def replace(CDA, template, frag):
-    insert(CDA, template, frag)
-    delete(CDA, template, template)
+def replace(dna, template, frag):
+    line = dna[-1]
+    line = line.replace(template, frag, 1)
+    dna.append(line)
+    return dna
 
 
-def find_sublist(CDA, frag):
+def find_sublist(dna, frag):
     res_begin = -1
     res_end = -1
-    for idx in range(len(CDA) - len(frag) + 1):
-        if list(itertools.islice(CDA, idx, idx + len(frag))) == frag:
+    for idx in range(len(dna) - len(frag) + 1):
+        if list(itertools.islice(dna, idx, idx + len(frag))) == frag:
             res_begin = idx
             res_end = idx + len(frag)
             break
     return [res_begin, res_end]
 
 
-def command_center(file, file_write, CDA, n):
+def command_center(file, dna, n):
     for line in file:
         command, arg1, arg2 = line.split()
-        arg1 = [a for a in arg1]
-        arg2 = [a for a in arg2]
         match command:
             case "INSERT":
-                insert(CDA, arg1, arg2)
-                write_file(CDA, file_write, line.replace("\n", ""))
+                dna = insert(dna, arg1, arg2)
             case "DELETE":
-                delete(CDA, arg1, arg2)
-                write_file(CDA, file_write, line.replace("\n", ""))
+                dna = delete(dna, arg1, arg2)
             case "REPLACE":
-                replace(CDA, arg1, arg2)
-                write_file(CDA, file_write, line.replace("\n", ""))
+                dna = replace(dna, arg1, arg2)
+    return dna
 
 
 def read_data(file):
     m = file.readline()
-    CDA = file.readline()
+    dna = file.readline()
     n = file.readline()
-    return m, CDA, n
+    return m, dna, n
+
+
+def valid_existed_file(user_input):
+    match user_input:
+        case "y":
+            return True
+        case "n":
+            exit()
+        case _:
+            return valid_existed_file(input())
+
+
+def valid_user_input(*args):
+    if len(args) != 2:
+        print("Неверное число файлов")
+        return False
+    if exists(args[0]):
+        if exists(args[1]):
+            return valid_existed_file(
+                input(
+                    "Файл ввода уже существует. Данные будут перезаписаны. Хотите продолжить? [y/n] \n"
+                )
+            )
+        else:
+            new_file = open(f"{args[1]}", "a")
+            new_file.close()
+            return True
+    else:
+        print("Файл ввода не найдет")
+        return False
 
 
 def main():
     user_input = input("Введите 2 файла \n").split()
-    if not (exists(user_input[0])) or not (exists(user_input[1])):
-        exit(print("Неверно введены файлы"))
-    file = open(user_input[0])
+    while not valid_user_input(*user_input):
+        user_input = input("Введите 2 файла \n").split()
+    else:
+        file = open(user_input[0])
+    m, old_dna, n = read_data(file)
+    dna = [old_dna[:-1]]
+    dna = command_center(file, dna, n)
+    file.close()
     file_write = open(user_input[1], "w")
-    m, DNA, n = read_data(file)
-    DNA = deque(DNA)
-    DNA.remove("\n")
-    command_center(file, file_write, DNA, n)
+    write_file(dna, file_write)
+    file_write.close()
 
 
 if __name__ == "__main__":
