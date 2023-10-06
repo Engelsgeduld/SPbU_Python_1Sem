@@ -1,5 +1,6 @@
 from collections import namedtuple
 from dataclasses import dataclass
+from typing import Optional
 
 StackElement = namedtuple("StackElement", ["next", "value"])
 
@@ -7,16 +8,16 @@ StackElement = namedtuple("StackElement", ["next", "value"])
 @dataclass
 class Stack:
     size: int
-    head: StackElement
+    head: Optional[StackElement]
 
 
 def create_stack():
-    new_stack = Stack(size=0, head=StackElement(next=None, value=None))
+    new_stack = Stack(size=0, head=None)
     return new_stack
 
 
 def empty(stack):
-    return True if stack.size == 0 else False
+    return not bool(stack.size)
 
 
 def size(stack):
@@ -24,11 +25,11 @@ def size(stack):
 
 
 def top(stack):
-    return stack.head.value
+    return stack.head.value if stack.head is not None else None
 
 
 def push(stack, value):
-    stack.head = StackElement(stack.head, f"{value}")
+    stack.head = StackElement(stack.head, value)
     stack.size += 1
 
 
@@ -45,8 +46,6 @@ def main():
     push(stack, "111")
     push(stack, "222")
     push(stack, "333")
-    pop(stack)
-    pop(stack)
     pop(stack)
     pop(stack)
     print(top(stack))
