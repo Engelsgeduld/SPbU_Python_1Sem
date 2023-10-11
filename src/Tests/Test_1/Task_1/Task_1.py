@@ -66,9 +66,9 @@ def main():
     if check_file_f_existence(file_f) is False:
         print("Файл ввода не существует")
         exit()
-    '''if check_file_g_existence(file_g):
+    if check_file_g_existence(file_g):
         print("Файл вывода уже существует")
-        exit()'''
+        exit()
 
     write_output(file_g, *file_analyse(read_input_file(file_f), a, b))
 
