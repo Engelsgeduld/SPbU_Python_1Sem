@@ -1,8 +1,5 @@
-def valid(user_input):
-    try:
-        [float_check(num) for num in user_input.split()]
-    except ValueError as error:
-        raise error
+def valid_user_input(user_input):
+    [float_check(num) for num in user_input.split()]
 
 
 def choose_function(args):
@@ -18,18 +15,20 @@ def choose_function(args):
 
 def find_real_square_root(a, b, c):
     if a == 0:
-        raise ValueError("Значение параметра а не должно равняться нулю")
+        return find_linear_solution(b, c)
 
     dis = b**2 - 4 * a * c
-    sqrt_val = dis ** (1 / 2)
+
     if dis < 0:
         raise ValueError("Дискриминант меньше 0")
 
+    sqrt_val = dis ** (1 / 2)
+
     if dis > 0:
-        return [(-b + sign * sqrt_val) / (2 * a) for sign in (-1, 1)]
+        return tuple((-b + sign * sqrt_val) / (2 * a) for sign in (-1, 1))
 
     if dis == 0:
-        return [-b / (2 * a)]
+        return (-b / (2 * a),)
 
 
 def find_linear_solution(a, b):
@@ -37,8 +36,8 @@ def find_linear_solution(a, b):
         raise ValueError("Решение таких уравнений в данной системе не рассматривается")
 
     if a == 0:
-        raise ValueError("Значение параметра а не должно быть равно нулю")
-    return -b / a
+        raise ValueError("Значение параметра k не должно быть равно нулю")
+    return (-b / a,)
 
 
 def float_check(num):
@@ -49,17 +48,15 @@ def float_check(num):
 
 
 def main():
-    user_input = input("Введите значения \n")
+    user_input = input(
+        "Введите значения a, b, c для квадратного уравнения, либо k, b для линейного\n"
+    )
     try:
-        valid(user_input)
+        valid_user_input(user_input)
+        args = list(map(float, user_input.split()))
+        print(f"Результат вычислений: {' '.join(map(str,choose_function(args)))}")
     except ValueError as error:
         print(error)
-    else:
-        args = list(map(float, user_input.split()))
-        try:
-            print(*choose_function(args))
-        except ValueError as error:
-            print(error)
 
 
 if __name__ == "__main__":
