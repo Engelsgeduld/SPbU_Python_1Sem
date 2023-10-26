@@ -5,20 +5,34 @@ import pytest
 from src.Practice.Lesson_7.Task_1 import *
 
 
-@pytest.mark.parametrize("args", [[1], [1, 2, 3, 4, 5]])
-def test_len_exception(args):
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ((0, 2, 3), (-3 / 2,)),
+        ((0, 1, 1), (-1,)),
+        ((2, -1, -15), (-2.5, 3)),
+        ((1, 12, 36), (-6.0,)),
+    ],
+)
+def test_solve_function(args, expected):
+    assert solve_function(args) == expected
+
+
+@pytest.mark.parametrize(
+    "args", ["not integer input", "1", "1 2 3 4", "1 2 3 4 5", "r r r", "5     "]
+)
+def test_parse_exceptions(args):
     with pytest.raises(ValueError):
-        choose_function(args)
+        parse_user_input(args)
 
 
-def test_raise_exception_type():
-    with pytest.raises(ValueError):
-        valid_user_input("not integer input")
-
-
-def test_valid_integer():
-    with pytest.raises(ValueError):
-        float_check("get string")
+@pytest.mark.parametrize(
+    "line, expected",
+    [("1 2 3", [1.0, 2.0, 3.0]), ("2 3", [2.0, 3.0]), ("4.5 3.5 1", [4.5, 3.5, 1.0])],
+)
+def test_parse_function(line, expected):
+    actual = parse_user_input(line)
+    assert actual == expected
 
 
 @pytest.mark.parametrize("a, b", [(0, 1), (0, 0)])
@@ -33,7 +47,14 @@ def test_raise_exceptions_dis():
 
 
 @pytest.mark.parametrize(
-    "a,b, expected", [(1, 2, (-2.0,)), (2, -2, (1.0,)), (-2, 4, (2.0,))]
+    "a,b, expected",
+    [
+        (1, 2, (-2.0,)),
+        (2, -2, (1.0,)),
+        (-2, 4, (2.0,)),
+        (3, 0, (0.0,)),
+        (4, -3, (3 / 4,)),
+    ],
 )
 def test_linear_root(a, b, expected):
     actual = find_linear_solution(a, b)
@@ -42,11 +63,11 @@ def test_linear_root(a, b, expected):
 
 @pytest.mark.parametrize(
     "a,b,c,expected",
-    [(2, -1, -15, (-2.5, 3)), (1, 12, 36, (-6.0,)), (0, 2, 4, (-2.0,))],
+    [(2, -1, -15, (-2.5, 3)), (1, 12, 36, (-6.0,))],
 )
 def test_square_root(a, b, c, expected):
     actual = find_real_square_root(a, b, c)
-    assert [actual[i] == expected[i] for i in range(len(expected))]
+    assert actual == expected
 
 
 def test_main_scenario(monkeypatch):
@@ -69,7 +90,7 @@ def test_main_scenario(monkeypatch):
             "Количество введенных аргументов не подходит ни к одному типу функции",
         ),
         ("120 1 1", "Дискриминант меньше 0"),
-        ("r t r", "Аргумент не является числом"),
+        ("r t r", "Введеные значения не являются числами"),
     ],
 )
 def test_output_scenario(monkeypatch, unique_input, unique_output):
