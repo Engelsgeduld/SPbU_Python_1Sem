@@ -1,8 +1,4 @@
 class Node:
-    data = None
-    next = None
-    prev = None
-
     def __init__(self, data):
         self.data = data
         self.next = None
@@ -10,10 +6,6 @@ class Node:
 
 
 class Queue:
-    size = 0
-    head = None
-    tail = None
-
     def __init__(self):
         self.size = 0
         self.head = None
@@ -21,7 +13,7 @@ class Queue:
 
 
 def create_queue():
-    return Queue
+    return Queue()
 
 
 def size(queue):
@@ -32,9 +24,8 @@ def empty(queue):
     return queue.size == 0
 
 
-def push(new_data, queue):
+def push(queue, new_data):
     new_node = Node(new_data)
-    new_node.data = new_data
     new_node.next = queue.head
     if queue.size != 0:
         queue.head.prev = new_node
@@ -49,22 +40,20 @@ def push(new_data, queue):
 
 
 def top(queue):
-    if queue.size == 0:
-        return queue.head
-    else:
-        return queue.head.data
+    if empty(queue):
+        return None
+    return queue.head.data
 
 
 def tail(queue):
-    if queue.size == 0:
-        return queue.tail
-    else:
-        return queue.tail.data
+    if empty(queue):
+        return None
+    return queue.tail.data
 
 
 def pop(queue):
     if queue.size == 0:
-        raise Exception("Queue is empty. Please add something to delete")
+        raise IndexError("Queue is empty. Please add something to delete")
     elif queue.size == 1:
         queue.head = queue.tail = queue.tail.next
     else:
