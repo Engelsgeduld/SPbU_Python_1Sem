@@ -1,15 +1,21 @@
-class Node:
-    def __init__(self, data):
-        self.data = data
-        self.next = None
-        self.prev = None
+from dataclasses import dataclass
+from typing import TypeVar, Optional, Generic
+
+Data = TypeVar("Data")
 
 
+@dataclass
+class Node(Generic[Data]):
+    data: Data
+    next = None
+    prev = None
+
+
+@dataclass
 class Queue:
-    def __init__(self):
-        self.size = 0
-        self.head = None
-        self.tail = None
+    size: int = 0
+    head: Optional[Node[Data]] = None
+    tail: Optional[Node[Data]] = None
 
 
 def create_queue():
@@ -24,7 +30,7 @@ def empty(queue):
     return queue.size == 0
 
 
-def push(queue, new_data):
+def push(queue, new_data: Data):
     new_node = Node(new_data)
     new_node.next = queue.head
     if queue.size != 0:
