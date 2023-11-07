@@ -25,7 +25,9 @@ def test_creation_tree():
     assert actual == Tree(0)
 
 
-@pytest.mark.parametrize("tree_type, key, result", ((int, 8, True), (str, 8, False)))
+@pytest.mark.parametrize(
+    "tree_type, key, result", ((int, 8, True), (str, 8, False), (None, None, False))
+)
 def test_valid_input_key(tree_type, key, result, empy_tree_initialization):
     empy_tree_initialization.type = tree_type
     assert _valid_input_key(empy_tree_initialization, key) is result

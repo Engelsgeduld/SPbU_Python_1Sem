@@ -9,19 +9,19 @@ Key = TypeVar("Key")
 class Node(Generic[Key, Value]):
     key: Key
     data: Value
-    right_children: Optional["Node[Value]"] = None
-    left_children: Optional["Node[Value]"] = None
+    right_children: Optional["Node[Key ,Value]"] = None
+    left_children: Optional["Node[Key ,Value]"] = None
 
 
 @dataclass
-class Tree:
+class Tree(Generic[Key, Value]):
     size: int = 0
     root: Optional[Node[Key, Value]] = None
     type: type = int
 
 
 def _valid_input_key(map: Tree, key: Key) -> bool:
-    return type(key) == map.type
+    return key is not None if map.type is None else type(key) == map.type
 
 
 def create_tree_map() -> Tree:
@@ -73,16 +73,16 @@ def get(map: Tree, key) -> Value:
 def put(map: Tree, key: Key, value: Value) -> ():
     if map.type is not None and not _valid_input_key(map, key):
         raise ValueError("Keys must be one type")
-    _insert(map.root, key, value) if map.size != 0 else _insert_main_root(
-        map, key, value
-    )
+    if map.size != 0:
+        _insert(map.root, key, value)
+    else:
+        _insert_main_root(map, key, value)
     map.size += 1
 
 
 def _insert_main_root(map: Tree, key: Key, value: Value):
-    map.root = Node(key, value)
-    if key is not None:
-        map.type = type(key)
+    if _valid_input_key(map, key):
+        map.root = Node(key, value)
     else:
         raise ValueError("Key can not be None")
 
