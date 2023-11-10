@@ -12,7 +12,7 @@ jobs:
           python-version: 3.11.5
           cache: "pip"
       - name: "installation"
-        run: pip install black pytest
+        run: pip install black pytest mimesis
       - name: "black"
         run: black . --check --diff --color
       - name: "pytest"
