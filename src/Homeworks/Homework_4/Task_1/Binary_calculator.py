@@ -1,5 +1,5 @@
 def inverse(byte):
-    return 0 if byte else 1
+    return 0 if byte == 1 else 1
 
 
 def positive_binary_to_integer(binary):
