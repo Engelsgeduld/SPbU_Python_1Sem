@@ -26,31 +26,23 @@ def validate_compress_input(line):
 
 
 def compress_line(line):
-    new_line = ""
-    index = 0
-    for i in range(len(line) - 1):
-        if line[i + 1] != line[index]:
-            new_line += f"{line[index]}{(i - index + 1)}"
-            index = i + 1
-    new_line += f"{line[index]}{len(line) - index}"
-    return new_line
+    transfers = list(
+        filter(lambda index: line[index - 1] != line[index], range(1, len(line)))
+    ) + [len(line)]
+    pairs = list(map(lambda x, y: (x, y - x), transfers, transfers[1:]))
+    new_line = "".join(list(map(lambda pair: f"{line[pair[0]]}{pair[1]}", pairs)))
+    compressed_line = f"{line[0]}{transfers[0]}" + new_line
+    return compressed_line
 
 
 def decode_line(line):
-    current_letter = line[0]
-    number = ""
-    new_string = ""
-    for i in range(len(line) - 1):
-        char = line[i + 1]
-        if char not in string.ascii_letters:
-            number += char
-        else:
-            new_string += current_letter * int(number)
-            current_letter = char
-            number = ""
-    else:
-        new_string += current_letter * int(number)
-    return new_string
+    letters = list(
+        filter(lambda index: line[index] in string.ascii_letters, range(len(line)))
+    ) + [len(line)]
+    new_line = "".join(
+        list(map(lambda x, y: line[x] * int(line[x + 1 : y]), letters, letters[1:]))
+    )
+    return new_line
 
 
 def encode_dna():
