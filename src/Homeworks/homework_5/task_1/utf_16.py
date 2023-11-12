@@ -1,21 +1,12 @@
 import re
 
 
-def get_chars(line):
-    chars = [char for char in line]
-    return chars
-
-
-def get_unicode(chars):
-    def line_constructor(char):
-        codepoint = hex(ord(char))[2:]
-        unicode_sign = "U+"
-        zero_line = "0" * (4 - len(codepoint))
-        unicode_code_line = (unicode_sign + zero_line + codepoint).upper()
-        return unicode_code_line
-
-    unicodes = list(map(lambda char: line_constructor(char), chars))
-    return unicodes
+def get_unicode(char):
+    codepoint = hex(ord(char))[2:]
+    unicode_sign = "U+"
+    zero_line = "0" * (4 - len(codepoint))
+    unicode_code_line = (unicode_sign + zero_line + codepoint).upper()
+    return unicode_code_line
 
 
 def height_lows_bytes(char):
@@ -30,11 +21,15 @@ def height_lows_bytes(char):
         return zero_line + char_binary
 
 
-def get_utf_16(chars):
-    codepoints = list(map(lambda char: int(hex(ord(char)), 16), chars))
-    utf_codes = list(map(lambda char: height_lows_bytes(char), codepoints))
+def get_utf_16(char):
+    codepoint = int(hex(ord(char)), 16)
+    utf_code = height_lows_bytes(codepoint)
+    return utf_code
+
+
+def format_utf_16(utf_16):
     formatted_utf_codes = list(
-        map(lambda x: " ".join(re.findall(f'{"."*8}', x)), utf_codes)
+        map(lambda x: " ".join(re.findall(f'{"."*8}', x)), utf_16)
     )
     return formatted_utf_codes
 
@@ -47,8 +42,11 @@ def print_line(string):
 
 def main():
     user_line = input("Enter a string:")
-    chars = get_chars(user_line)
-    strings = zip(chars, get_unicode(chars), get_utf_16(chars))
+    chars = list(user_line)
+    unicodes = list(map(get_unicode, chars))
+    utf = list(map(get_utf_16, chars))
+    formatted_utf = format_utf_16(utf)
+    strings = zip(chars, unicodes, formatted_utf)
     print_line(strings)
 
 

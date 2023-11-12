@@ -5,25 +5,17 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "line, chars",
-    (
-        ("qwer", ["q", "w", "e", "r"]),
-        ("1223", ["1", "2", "2", "3"]),
-        ("äölöä", ["ä", "ö", "l", "ö", "ä"]),
-        ("푸풍풅", ["푸", "풍", "풅"]),
-    ),
-)
-def test_char_function(line, chars):
-    actual = get_chars(line)
-    assert actual == chars
-
-
-@pytest.mark.parametrize(
     "chars,unicode",
     (
-        (["Ā", "Ă", "Ą"], ["U+0100", "U+0102", "U+0104"]),
-        (["푸", "풍", "풅"], ["U+D478", "U+D48D", "U+D485"]),
-        (["𝆺𝅥𝅯", "𝇑", "𝇜"], ["U+1D1C0", "U+1D1D1", "U+1D1DC"]),
+        ("Ā", "U+0100"),
+        ("Ă", "U+0102"),
+        ("Ą", "U+0104"),
+        ("푸", "U+D478"),
+        ("풍", "U+D48D"),
+        ("풅", "U+D485"),
+        ("𝆺𝅥𝅯", "U+1D1C0"),
+        ("𝇑", "U+1D1D1"),
+        ("𝇜", "U+1D1DC"),
     ),
 )
 def test_get_unicode(chars, unicode):
@@ -34,27 +26,29 @@ def test_get_unicode(chars, unicode):
 @pytest.mark.parametrize(
     "chars, binary",
     (
-        (("a", "b"), ["00000000 01100001", "00000000 01100010"]),
-        (
-            ("𝀂", "𝀋"),
-            [
-                "11011000 00110100 11011100 00000010",
-                "11011000 00110100 11011100 00001011",
-            ],
-        ),
-        (
-            ("𝌠", "𝌬"),
-            [
-                "11011000 00110100 11011111 00100000",
-                "11011000 00110100 11011111 00101100",
-            ],
-        ),
+        ("a", "0000000001100001"),
+        ("b", "0000000001100010"),
+        ("𝀂", "11011000001101001101110000000010"),
+        ("𝀋", "11011000001101001101110000001011"),
+        ("𝌠", "11011000001101001101111100100000"),
+        ("𝌬", "11011000001101001101111100101100"),
     ),
 )
 def test_binary_utf(chars, binary):
-    print(chars, binary)
     actual = get_utf_16(chars)
     assert actual == binary
+
+
+@pytest.mark.parametrize(
+    "utf, formatted_utf",
+    (
+        (["0000000001100001"], ["00000000 01100001"]),
+        (["11011000001101001101110000000010"], ["11011000 00110100 11011100 00000010"]),
+    ),
+)
+def test_format_utf(utf, formatted_utf):
+    actual = format_utf_16(utf)
+    assert actual == formatted_utf
 
 
 def test_main_scenario(monkeypatch):
