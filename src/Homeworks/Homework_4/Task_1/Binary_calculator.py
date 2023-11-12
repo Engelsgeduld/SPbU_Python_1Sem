@@ -16,10 +16,9 @@ def negative_binary_to_integer(binary):
 
 
 def to_integer(binary):
-    if not binary[0]:
+    if binary[0] == 0:
         return positive_binary_to_integer(binary)
-    else:
-        return negative_binary_to_integer(binary)
+    return negative_binary_to_integer(binary)
 
 
 def to_binary(integer):
@@ -36,17 +35,17 @@ def to_byte_form(integer, n):
     sign_bit = 0 if integer >= 0 else 1
     zero_row = [0] * (n - len(to_binary(integer)) - 1)
     result = [sign_bit] + zero_row + to_binary(integer)
-    if sign_bit:
+    if sign_bit == 1:
         inverse_binary = list(map(lambda x: inverse(x), result[1:]))
         result = [sign_bit] + to_binary_sum(inverse_binary, to_byte_form(1, n))
     return result
 
 
 def to_binary_sum(firsts_num, second_num):
-    ost = 0
+    modulo = 0
     for i in range(1, len(firsts_num) + 1):
-        firsts_num[-i] += second_num[-i] + ost
-        ost = firsts_num[-i] // 2
+        firsts_num[-i] += second_num[-i] + modulo
+        modulo = firsts_num[-i] // 2
         firsts_num[-i] = firsts_num[-i] % 2
     return firsts_num
 
@@ -56,12 +55,12 @@ def validate_user_input(user_input):
     if len(split_user_input) < 2:
         raise ValueError("Введено менее 2 аргументов")
     try:
-        valid_nums = [float(num) for num in split_user_input]
+        valid_nums = [int(num) for num in split_user_input]
     except:
         raise ValueError(
             "Введенные аргументы не являются числами или их количество выше допустимого"
         )
-    return list(map(int, valid_nums))
+    return valid_nums
 
 
 def main():
