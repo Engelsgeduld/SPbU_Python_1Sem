@@ -8,7 +8,7 @@ from src.Homeworks.homework_6.task_1_shopping.shopping import main, command_oper
 def data_set_log_import():
     log_file_name = "logs.txt"
     expected, expected_balance, actual, actual_balance = [], [], [], []
-    with open("shop_results.txt") as result:
+    with open("Tests/homeworks/homework_6/task_1_shopping/shop_results.txt") as result:
         for line in result.readlines():
             expected.append(line)
     with open(f"{log_file_name}") as result:
@@ -21,7 +21,7 @@ def data_set_log_import():
 def test_file_validation(monkeypatch):
     monkeypatch.setattr(
         "builtins.input",
-        lambda _: "../../../../src/Homeworks/homework_6/task_1_shopping/wrong_name.txt",
+        lambda _: "src/Homeworks/homework_6/task_1_shopping/wrong_name.txt",
     )
     with pytest.raises(ValueError):
         main()
@@ -39,7 +39,7 @@ def test_command_operator_exceptions(command, args):
 def data_set_balance_import():
     balance_file_name = "balance.txt"
     actual_balance, expected_balance = [], []
-    with open("shop_balance.txt") as balance:
+    with open("Tests/homeworks/homework_6/task_1_shopping/shop_balance.txt") as balance:
         for line in balance.readlines():
             expected_balance.append(line)
     with open(f"{balance_file_name}") as real_balance:
@@ -51,7 +51,7 @@ def data_set_balance_import():
 def test_main_scenario_runner(monkeypatch):
     monkeypatch.setattr(
         "builtins.input",
-        lambda _: "../../../../src/Homeworks/homework_6/task_1_shopping/shop_logs.txt",
+        lambda _: "src/Homeworks/homework_6/task_1_shopping/shop_logs.txt",
     )
     main()
     assert exists(f"logs.txt")

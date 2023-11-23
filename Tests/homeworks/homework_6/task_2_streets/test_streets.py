@@ -8,7 +8,9 @@ from src.Homeworks.homework_6.task_2_streets.streets import *
 def data_set_log_import():
     log_file_name = "streets_res.txt"
     expected, expected_balance, actual, actual_balance = [], [], [], []
-    with open("streets_results.txt") as result:
+    with open(
+        "Tests/homeworks/homework_6/task_2_streets/streets_results.txt"
+    ) as result:
         for line in result.readlines():
             expected.append(line)
     with open(f"{log_file_name}") as result:
@@ -19,9 +21,7 @@ def data_set_log_import():
 
 
 def test_main_scenario_runner(monkeypatch):
-    inputs = iter(
-        ["2", "../../../../src/Homeworks/homework_6/task_2_streets/streets_logs.txt"]
-    )
+    inputs = iter(["2", "src/Homeworks/homework_6/task_2_streets/streets_logs.txt"])
     monkeypatch.setattr(
         "builtins.input",
         lambda _: next(inputs),
