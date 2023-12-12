@@ -36,7 +36,7 @@ def language_validator(line: str) -> list[str]:
 def output_line_printer(line: str):
     passed_langs = language_validator(line)
     if passed_langs:
-        print(f"This is {" ".join(passed_langs)}")
+        print(f"This is {' '.join(passed_langs)}")
     else:
         print("This string match no language")
 
