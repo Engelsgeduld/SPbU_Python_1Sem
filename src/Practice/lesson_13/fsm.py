@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class State:
-    transfers: dict[str:int]
+    transfers: dict[str, int]
 
 
 @dataclass
@@ -13,7 +13,7 @@ class FSMachine:
     end_states: list[int]
 
 
-def create_state(state_and_condition: dict[str:int]) -> State:
+def create_state(state_and_condition: dict[str, int]) -> State:
     return State(state_and_condition)
 
 
@@ -25,30 +25,26 @@ def create_fs_machine(
 
 
 def state_move(current_state_index: int, token: str, fsm: FSMachine) -> int | None:
-    current_state = fsm.states[current_state_index].transfers
-    transfer = list(
-        map(
-            lambda condition: current_state[condition] if token in condition else None,
-            list(current_state),
-        )
-    )
-    next_state = list(filter(lambda x: x is not None, transfer))
-    if len(next_state) == 0:
-        return None
-    return next_state[0]
+    current_state_transfers = fsm.states[current_state_index].transfers
+    next_state = None
+    for condition in current_state_transfers:
+        if token in condition:
+            next_state = current_state_transfers.get(condition)
+            break
+    return next_state
 
 
 def iterator(fsm: FSMachine, tokens: list[str]) -> int:
-    def iterator_recursion(state_index, token_index):
-        if token_index == len(tokens) or state_index is None:
-            return state_index
-        next_state = state_move(state_index, tokens[token_index], fsm)
-        return iterator_recursion(next_state, token_index + 1)
-
-    return iterator_recursion(fsm.start_state, 0)
+    start_state = fsm.start_state
+    for token in tokens:
+        next_state = state_move(start_state, token, fsm)
+        if next_state is None:
+            return start_state
+        start_state = next_state
+    return start_state
 
 
 def validate_string(fsm: FSMachine, string: str) -> bool:
-    tokens = [*string]
+    tokens = list(string)
     end_state = iterator(fsm, tokens)
     return end_state in fsm.end_states
