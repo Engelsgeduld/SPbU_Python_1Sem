@@ -19,9 +19,10 @@ def data_set_log_import():
 
 
 def test_file_validation(monkeypatch):
+    names = iter(["logs.txt", "balance.txt", "wrong_name.txt"])
     monkeypatch.setattr(
         "builtins.input",
-        lambda _: "wrong_name.txt",
+        lambda _: next(names),
     )
     with pytest.raises(ValueError):
         main()
@@ -33,7 +34,7 @@ def test_file_validation(monkeypatch):
 )
 def test_command_operator_exceptions(command, args):
     with pytest.raises(ValueError):
-        command_operator(Tree(), command, *args)
+        command_operator(Tree(), "logs.txt", command, *args)
 
 
 def data_set_balance_import():
@@ -49,9 +50,16 @@ def data_set_balance_import():
 
 
 def test_main_scenario_runner(monkeypatch):
+    names = iter(
+        [
+            "logs.txt",
+            "balance.txt",
+            "src/Homeworks/homework_6/task_1_shopping/shop_logs.txt",
+        ]
+    )
     monkeypatch.setattr(
         "builtins.input",
-        lambda _: "src/Homeworks/homework_6/task_1_shopping/shop_logs.txt",
+        lambda _: next(names),
     )
     main()
     assert exists(f"logs.txt")
@@ -61,10 +69,12 @@ def test_main_scenario_runner(monkeypatch):
 def test_main_logs():
     actual, expected = data_set_log_import()
     for i in range(len(actual)):
+        print(i)
         assert actual[i] == expected[i]
 
 
 def test_main_balance():
     actual_balance, expected_balance = data_set_balance_import()
     for i in range(len(actual_balance)):
+        print(i)
         assert actual_balance[i] == expected_balance[i]

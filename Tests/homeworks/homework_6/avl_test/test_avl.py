@@ -1,3 +1,4 @@
+from math import log2
 from src.Homeworks.homework_6.avl_tree_module.avl_tree import *
 from src.Homeworks.homework_6.avl_tree_module.avl_tree import (
     _insert_main_root,
@@ -160,20 +161,20 @@ split_data_set = [
         5,
         [
             [(3, "3"), (2, "2"), (4, "4")],
-            [(6, "6"), (5, "5"), (8, "8"), (7, "7"), (9, "9")],
+            [(8, "8"), (6, "6"), (5, "5"), (7, "7"), (9, "9")],
         ],
     ),
     (
         10,
         [
             [
-                (4, "4"),
+                (5, "5"),
                 (3, "3"),
                 (2, "2"),
-                (6, "6"),
-                (5, "5"),
+                (4, "4"),
                 (8, "8"),
                 (7, "7"),
+                (6, "6"),
                 (9, "9"),
             ],
             None,
@@ -201,30 +202,24 @@ def test_get_all_keys_function(left, right, result, tree_initialization_with_val
     assert actual == result
 
 
-new_tree_data = [
-    (6, "6"),
-    (2, "2"),
-    (-20, "-20"),
-    (1, "1"),
-    (4, "4"),
-    (3, "3"),
-    (5, "5"),
-    (8, "8"),
-    (7, "7"),
-    (50, "50"),
-    (9, "9"),
-    (100, "100"),
-]
-
-
-def test_merge_functions(tree_initialization_with_values):
-    new_tree = create_tree_map()
-    put(new_tree, 100, "100")
-    put(new_tree, 50, "50")
-    put(new_tree, 1, "1")
-    put(new_tree, -20, "-20")
-    actual = traverse(merge(new_tree, tree_initialization_with_values), 0)
-    assert actual == new_tree_data
+@pytest.mark.parametrize(
+    "first_tree_args, second_tree_args",
+    [([1, 2, 3, 4], [5, 6, 7, 8, 9]), ([1, 2], [5]), ([4, 5, 6], [7, 8, 9])],
+)
+def test_merge_functions(first_tree_args, second_tree_args):
+    first_tree, second_tree = create_tree_map(), create_tree_map()
+    all_keys = list(
+        zip(first_tree_args + second_tree_args, first_tree_args + second_tree_args)
+    )
+    for key in first_tree_args:
+        put(first_tree, key, key)
+    for key in second_tree_args:
+        put(second_tree, key, key)
+    merged_tree = merge(first_tree, second_tree)
+    actual = traverse(merged_tree, 0)
+    assert set(actual) == set(all_keys) and merged_tree.root.height == (
+        int(log2(len(all_keys))) + 1
+    )
 
 
 def test_split_tree_empty_scenario(empy_tree_initialization):
