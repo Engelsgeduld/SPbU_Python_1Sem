@@ -65,7 +65,7 @@ def test_state_move(state_index, token, next_state, create_fms_digits):
 
 
 @pytest.mark.parametrize(
-    "tokens, result", [(["f"], 0), (["1", "2", "."], 6), (["1", "2", "E"], 3)]
+    "tokens, result", [(["f"], None), (["1", "2", "."], 6), (["1", "2", "E"], 3)]
 )
 def test_iterator(tokens, result, create_fms_digits):
     actual = iterator(create_fms_digits, tokens)

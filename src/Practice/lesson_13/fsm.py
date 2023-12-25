@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -26,20 +27,19 @@ def create_fs_machine(
 
 def state_move(current_state_index: int, token: str, fsm: FSMachine) -> int | None:
     current_state_transfers = fsm.states[current_state_index].transfers
-    next_state = None
     for condition in current_state_transfers:
         if token in condition:
             next_state = current_state_transfers.get(condition)
-            break
-    return next_state
+            return next_state
+    return None
 
 
-def iterator(fsm: FSMachine, tokens: list[str]) -> int:
+def iterator(fsm: FSMachine, tokens: list[str]) -> Optional[int]:
     start_state = fsm.start_state
     for token in tokens:
         next_state = state_move(start_state, token, fsm)
         if next_state is None:
-            return start_state
+            return None
         start_state = next_state
     return start_state
 
