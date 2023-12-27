@@ -23,7 +23,7 @@ def dummy_func_two(a, b, c, e):
         [[(2, "3", "1")], list[tuple[int | str]], True],
         [[1, 2, ("2", "3")], list[int | tuple[str]], True],
         [{"a": 1}, dict[str, int], True],
-        [("2", "1"), tuple[int], False]
+        [("2", "1"), tuple[int], False],
     ),
 )
 def test_check_type(value, type_, result):

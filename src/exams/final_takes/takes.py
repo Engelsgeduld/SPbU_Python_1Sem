@@ -47,4 +47,3 @@ def takes(func, *type_args):
         raise TypeError("Type mismatch")
 
     return inner
-
