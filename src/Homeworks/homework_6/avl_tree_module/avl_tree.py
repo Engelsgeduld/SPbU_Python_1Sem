@@ -110,22 +110,16 @@ def _insert(root: Node[Key, Value], key: Key, value: Value) -> Node[Value, Key]:
 
 def _extract_max(root: Node[Key, Value]) -> Node[Key, Value]:
     curr_node = root
-    res = root
     while curr_node.right_children is not None:
-        res = (
-            curr_node.right_children if res.key < curr_node.right_children.key else res
-        )
         curr_node = curr_node.right_children
-    return res
+    return curr_node
 
 
 def _extract_min(root: Node[Key, Value]) -> Node[Key, Value]:
     curr_node = root
-    res = root
     while curr_node.left_children is not None:
-        res = curr_node.left_children if res.key > curr_node.left_children.key else res
         curr_node = curr_node.left_children
-    return res
+    return curr_node
 
 
 def get_maximum(tree: Tree[Key, Value]) -> Key:
@@ -267,111 +261,3 @@ def traverse(map: Tree, order: int) -> list[Value] | None:
         case 1:
             traverse_recursion(map.root, _inorder_comparator)
     return nodes
-
-
-# За logn работает, но кидает ошибки в тестах ко 2 задаче, которые я ещё не отловил
-def merge(left_tree: Tree, right_tree: Tree) -> Optional[Tree[Key, Value]]:
-    if left_tree.root is None or right_tree.root is None:
-        return left_tree if right_tree.root is None else right_tree
-    if left_tree.root.height <= right_tree.root.height:
-        return _merge_with_low_height_or_equal(left_tree, right_tree)
-    return _merge_with_bigger_height(left_tree, right_tree)
-
-
-def _merge_with_low_height_or_equal(left_tree: Tree, right_tree: Tree):
-    most_right_node = _extract_max(left_tree.root)
-    remove(left_tree, most_right_node.key)
-    if left_tree.root is None:
-        put(right_tree, most_right_node.key, most_right_node.data)
-        return right_tree
-    if left_tree.root.height == right_tree.root.height:
-        left_node = right_tree.root
-    else:
-        left_node = _find_left_node_with_set_height(
-            right_tree.root, left_tree.root.height
-        )
-    most_right_node.left_children = left_tree.root
-    most_right_node.right_children = left_node.left_children
-    most_right_node = _balance_tree(most_right_node)
-    left_node.left_children = most_right_node
-    right_tree.root = _balance_tree(right_tree.root)
-    return right_tree
-
-
-def _merge_with_bigger_height(left_tree: Tree, right_tree: Tree):
-    most_left_node = _extract_min(right_tree.root)
-    remove(right_tree, most_left_node.key)
-    if right_tree.root is None:
-        put(left_tree, most_left_node.key, most_left_node.data)
-        return left_tree
-    right_node = _find_right_node_with_set_height(
-        left_tree.root, right_tree.root.height
-    )
-    most_left_node.left_children = right_node.right_children
-    most_left_node.right_children = right_tree.root
-    most_left_node = _balance_tree(most_left_node)
-    right_node.right_children = most_left_node
-    left_tree.root = _balance_tree(left_tree.root)
-    return left_tree
-
-
-def _find_left_node_with_set_height(root: Node[Key, Value], height: int):
-    curr_node_left = root
-    while curr_node_left.height != height + 1:
-        curr_node_left = root.left_children
-    return curr_node_left
-
-
-def _find_right_node_with_set_height(root: Node[Key, Value], height: int):
-    curr_node_right = root
-    while curr_node_right.height != height + 1:
-        curr_node_right = root.right_children
-    return curr_node_right
-
-
-# Заботает за logn, но без работающего merge юзлесс :(
-def split(
-    tree: Tree[Key, Value], key: int
-) -> tuple[Tree[Key, Value], Tree[Key, Value]]:
-    if tree.root is None:
-        return Tree(), Tree()
-
-    left_tree, right_tree = _split_recursion(tree, key)
-    return left_tree, right_tree
-
-
-def _split_recursion(curr_tree: Tree, key):
-    if curr_tree.root.key == key:
-        left_part = _create_tree_root(curr_tree.root.left_children)
-        right_part = _create_tree_root(curr_tree.root.right_children)
-        put(right_part, curr_tree.root.key, curr_tree.root.data)
-        return left_part, right_part
-    elif curr_tree.root.key > key:
-        if curr_tree.root.left_children is None:
-            return Tree(), curr_tree
-        left_part = _create_tree_root(curr_tree.root.left_children)
-        left_tree, right_tree = _split_recursion(left_part, key)
-        put(right_tree, curr_tree.root.key, curr_tree.root.data)
-        right_part = _create_tree_root(curr_tree.root.right_children)
-        return left_tree, merge(right_tree, right_part)
-    else:
-        if curr_tree.root.right_children is None:
-            return curr_tree, Tree()
-        right_part = _create_tree_root(curr_tree.root.right_children)
-        left_tree, right_tree = _split_recursion(right_part, key)
-        put(left_tree, curr_tree.root.key, curr_tree.root.data)
-        left_part = _create_tree_root(curr_tree.root.left_children)
-        return merge(left_part, left_tree), right_tree
-
-
-def get_all(tree: Tree[Key, Value], left: Key, right: Key) -> list[Key]:
-    if tree.type == str:
-        right += "$"
-    splited_tree = split(split(tree, left)[1], right)[0]
-    if splited_tree.root is None:
-        return []
-    return list(map(lambda pair: pair[0], traverse(splited_tree, 1)))
-
-
-def remove_keys(tree: Tree[Key, Value], left: Key, right: Key):
-    tree.root = merge(split(tree, left)[0], split(tree, right)[1]).root

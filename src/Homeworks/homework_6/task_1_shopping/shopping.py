@@ -12,9 +12,8 @@ def validate_files(input_file: str, balance_file: str, logs_file: str):
 
 
 def write_data(line, name):
-    logs = open(f"{name}", "a")
-    logs.write(str(line) + "\n")
-    logs.close()
+    with open(f"{name}", "a") as file:
+        file.write(str(line) + "\n")
 
 
 def write_balance(data, name):

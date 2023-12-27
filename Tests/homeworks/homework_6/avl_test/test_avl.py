@@ -2,7 +2,7 @@ from math import log2
 from src.Homeworks.homework_6.avl_tree_module.avl_tree import *
 from src.Homeworks.homework_6.avl_tree_module.avl_tree import (
     _insert_main_root,
-    _balance_tree,
+    _get_balance_factor,
 )
 import pytest
 
@@ -21,6 +21,21 @@ def tree_initialization_with_values():
     for i in range(len(keys)):
         put(tree, keys[i], values[i])
     return tree
+
+
+def balance_validator(root: Node[Key, Value], balance=[]):
+    if root is None:
+        return [0]
+
+    def recursion(node: Node[Key, Value]):
+        if node.right_children is not None:
+            recursion(node.right_children)
+        if node.left_children is not None:
+            recursion(node.left_children)
+        balance.append(_get_balance_factor(root))
+
+    recursion(root)
+    return balance
 
 
 def test_creation_tree():
@@ -156,90 +171,23 @@ def test_extract_min(tree_initialization_with_values):
     assert actual == 2
 
 
-split_data_set = [
+@pytest.mark.parametrize(
+    "args",
     (
-        5,
-        [
-            [(3, "3"), (2, "2"), (4, "4")],
-            [(8, "8"), (6, "6"), (5, "5"), (7, "7"), (9, "9")],
-        ],
-    ),
-    (
-        10,
-        [
-            [
-                (5, "5"),
-                (3, "3"),
-                (2, "2"),
-                (4, "4"),
-                (8, "8"),
-                (7, "7"),
-                (6, "6"),
-                (9, "9"),
-            ],
-            None,
-        ],
-    ),
-]
-
-
-@pytest.mark.parametrize(
-    "key, result",
-    split_data_set,
-)
-def test_split_function(key, result, tree_initialization_with_values):
-    actual = list(
-        map(lambda tree: traverse(tree, 0), split(tree_initialization_with_values, key))
-    )
-    assert actual == result
-
-
-@pytest.mark.parametrize(
-    "left, right, result", ((3, 7, [3, 4, 5, 6]), (10, 100, []), (3, 4, [3]))
-)
-def test_get_all_keys_function(left, right, result, tree_initialization_with_values):
-    actual = get_all(tree_initialization_with_values, left, right)
-    assert actual == result
-
-
-@pytest.mark.parametrize(
-    "first_tree_args, second_tree_args",
-    [([1, 2, 3, 4], [5, 6, 7, 8, 9]), ([1, 2], [5]), ([4, 5, 6], [7, 8, 9])],
-)
-def test_merge_functions(first_tree_args, second_tree_args):
-    first_tree, second_tree = create_tree_map(), create_tree_map()
-    all_keys = list(
-        zip(first_tree_args + second_tree_args, first_tree_args + second_tree_args)
-    )
-    for key in first_tree_args:
-        put(first_tree, key, key)
-    for key in second_tree_args:
-        put(second_tree, key, key)
-    merged_tree = merge(first_tree, second_tree)
-    actual = traverse(merged_tree, 0)
-    assert set(actual) == set(all_keys) and merged_tree.root.height == (
-        int(log2(len(all_keys))) + 1
-    )
-
-
-def test_split_tree_empty_scenario(empy_tree_initialization):
-    actual = split(empy_tree_initialization, 10)
-    assert actual == (empy_tree_initialization, empy_tree_initialization)
-
-
-def test_merge_tree_empty_scenario(empy_tree_initialization):
-    actual = merge(empy_tree_initialization, empy_tree_initialization)
-    assert actual == empy_tree_initialization
-
-
-@pytest.mark.parametrize(
-    "args, result",
-    (
-        ([1, 2, 3], [(2, "1"), (1, "1"), (3, "1")]),
-        ([1, 2, 0, -1, -2], [(1, "1"), (-1, "1"), (-2, "1"), (0, "1"), (2, "1")]),
+        [1, 2, 3],
+        [1, 2, 0, -1, -2, -99, 100],
     ),
 )
-def test_balance_function(args, result, empy_tree_initialization):
+def test_put_balance_function(args, empy_tree_initialization):
     for arg in args:
         put(empy_tree_initialization, arg, "1")
-    assert traverse(empy_tree_initialization, 0) == result
+        balance = balance_validator(empy_tree_initialization.root)
+        assert len(list(filter(lambda val: val in [-1, 0, 1], balance))) == len(balance)
+
+
+def test_delete_balance_function(tree_initialization_with_values):
+    keys = traverse(tree_initialization_with_values, 0)
+    for key in keys:
+        remove(tree_initialization_with_values, key[0])
+        balance = balance_validator(tree_initialization_with_values.root)
+        assert len(list(filter(lambda val: val in [-1, 0, 1], balance))) == len(balance)
